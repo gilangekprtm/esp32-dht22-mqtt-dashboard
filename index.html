@@ -27,104 +27,88 @@
         </div>
     </header>
 
-    <!-- Content Grid (Kartu Angka) -->
+    <!-- Speedometer Sensor -->
     <div class="w-full max-w-4xl grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        
-        <!-- Card Suhu -->
-        <div class="bg-slate-800/70 border border-slate-700/80 rounded-2xl p-6 shadow-xl flex flex-col justify-between relative overflow-hidden group hover:border-blue-500/50 transition-all">
-            <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-blue-500/10 rounded-full blur-2xl group-hover:bg-blue-500/20 transition-all"></div>
-            <div class="flex items-center justify-between">
-                <span class="text-sm font-semibold uppercase tracking-wider text-slate-400">Suhu Ruangan</span>
-                <div class="p-2.5 bg-blue-500/10 text-blue-400 rounded-xl">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                    </svg>
+        <div class="bg-slate-800/70 border border-slate-700/80 rounded-2xl p-6 shadow-xl text-center">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400">Suhu Ruangan</h2>
+            <div class="relative h-48 mt-2">
+                <canvas id="temperatureGauge"></canvas>
+                <div class="absolute inset-x-0 bottom-2">
+                    <span id="temp-value" class="text-4xl font-black text-white">--</span>
+                    <span class="text-lg font-bold text-blue-400">°C</span>
                 </div>
             </div>
-            <div class="my-6 flex items-baseline gap-2">
-                <span id="temp-value" class="text-5xl font-black tracking-tight text-white">--</span>
-                <span class="text-xl font-bold text-blue-400">°C</span>
-            </div>
-            <div class="text-xs text-slate-500">Topik: esp32/ruangan1/suhu</div>
+            <div class="text-xs text-slate-500">Suhu</div>
         </div>
-
-        <!-- Card Kelembapan -->
-        <div class="bg-slate-800/70 border border-slate-700/80 rounded-2xl p-6 shadow-xl flex flex-col justify-between relative overflow-hidden group hover:border-cyan-500/50 transition-all">
-            <div class="absolute -right-6 -bottom-6 w-28 h-28 bg-cyan-500/10 rounded-full blur-2xl group-hover:bg-cyan-500/20 transition-all"></div>
-            <div class="flex items-center justify-between">
-                <span class="text-sm font-semibold uppercase tracking-wider text-slate-400">Kelembapan Udara</span>
-                <div class="p-2.5 bg-cyan-500/10 text-cyan-400 rounded-xl">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z" />
-                    </svg>
+        <div class="bg-slate-800/70 border border-slate-700/80 rounded-2xl p-6 shadow-xl text-center">
+            <h2 class="text-sm font-semibold uppercase tracking-wider text-slate-400">Kelembapan Udara</h2>
+            <div class="relative h-48 mt-2">
+                <canvas id="humidityGauge"></canvas>
+                <div class="absolute inset-x-0 bottom-2">
+                    <span id="hum-value" class="text-4xl font-black text-white">--</span>
+                    <span class="text-lg font-bold text-cyan-400">%</span>
                 </div>
             </div>
-            <div class="my-6 flex items-baseline gap-2">
-                <span id="hum-value" class="text-5xl font-black tracking-tight text-white">--</span>
-                <span class="text-xl font-bold text-cyan-400">%</span>
-            </div>
-            <div class="text-xs text-slate-500">Topik: esp32/ruangan1/kelembaban</div>
+            <div class="text-xs text-slate-500">Kelembaban</div>
         </div>
-
     </div>
 
-    <!-- Grafik Section -->
+    <!-- Statistik Section -->
     <section class="w-full max-w-4xl bg-slate-800/70 border border-slate-700/80 rounded-2xl p-6 shadow-xl">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
-            <h2 class="text-lg font-bold text-slate-200">Grafik Riwayat Sensor</h2>
-            <label class="flex items-center gap-3 text-xs text-slate-400">
-                <span>Rentang: <strong id="range-value" class="text-slate-200">15</strong> titik</span>
-                <input id="range-slider" type="range" min="5" max="45" value="15" step="1"
-                    class="w-32 accent-cyan-400 cursor-pointer" aria-label="Rentang titik grafik">
-            </label>
+            <h2 class="text-lg font-bold text-slate-200">Statistik Sensor</h2>
         </div>
-        <div class="relative w-full h-72 sm:h-80">
-            <canvas id="sensorChart"></canvas>
+        <div class="overflow-x-auto">
+            <table class="w-full min-w-[480px] text-left">
+                <thead>
+                    <tr class="border-b border-slate-700 text-xs uppercase tracking-wider text-slate-500">
+                        <th class="px-3 py-3 font-medium">Sensor</th>
+                        <th class="px-3 py-3 text-right font-medium">Rata-rata</th>
+                        <th class="px-3 py-3 text-right font-medium">Maksimal</th>
+                        <th class="px-3 py-3 text-right font-medium">Minimal</th>
+                    </tr>
+                </thead>
+                <tbody class="text-sm">
+                    <tr class="border-b border-slate-700/70">
+                        <th class="px-3 py-4 font-medium text-blue-400">Suhu (°C)</th>
+                        <td id="temp-average" class="px-3 py-4 text-right font-semibold text-slate-200">--</td>
+                        <td id="temp-maximum" class="px-3 py-4 text-right font-semibold text-slate-200">--</td>
+                        <td id="temp-minimum" class="px-3 py-4 text-right font-semibold text-slate-200">--</td>
+                    </tr>
+                    <tr>
+                        <th class="px-3 py-4 font-medium text-cyan-400">Kelembapan (%)</th>
+                        <td id="hum-average" class="px-3 py-4 text-right font-semibold text-slate-200">--</td>
+                        <td id="hum-maximum" class="px-3 py-4 text-right font-semibold text-slate-200">--</td>
+                        <td id="hum-minimum" class="px-3 py-4 text-right font-semibold text-slate-200">--</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </section>
 
     <!-- Skrip Logika MQTT & Chart.js -->
     <script>
-        // Inisialisasi Grafik Chart.js
-        const ctx = document.getElementById('sensorChart').getContext('2d');
-        const chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: [],
-                datasets: [
-                    {
-                        label: 'Suhu (°C)',
-                        borderColor: '#60a5fa',
-                        backgroundColor: 'rgba(96, 165, 250, 0.1)',
-                        data: [],
-                        borderWidth: 2,
-                        tension: 0.3,
-                        fill: true
-                    },
-                    {
-                        label: 'Kelembapan (%)',
-                        borderColor: '#22d3ee',
-                        backgroundColor: 'rgba(34, 211, 238, 0.1)',
-                        data: [],
-                        borderWidth: 2,
-                        tension: 0.3,
-                        fill: true
+        function createGauge(canvasId, min, max, colors) {
+            return new Chart(document.getElementById(canvasId), {
+                type: 'doughnut',
+                data: { datasets: [{ data: [0, max - min], backgroundColor: colors, borderWidth: 0 }] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    rotation: -90,
+                    circumference: 180,
+                    cutout: '72%',
+                    animation: { duration: 900, easing: 'easeInOutQuart' },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { enabled: false }
                     }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: { grid: { color: 'rgba(51, 65, 85, 0.4)' }, ticks: { color: '#94a3b8' } },
-                    y: { grid: { color: 'rgba(51, 65, 85, 0.4)' }, ticks: { color: '#94a3b8' } }
-                },
-                plugins: {
-                    legend: { labels: { color: '#e2e8f0' } }
                 }
-            }
-        });
+            });
+        }
 
+        const temperatureGauge = createGauge('temperatureGauge', -10, 50, ['#60a5fa', '#1e293b']);
+        const humidityGauge = createGauge('humidityGauge', 0, 100, ['#22d3ee', '#1e293b']);
         // Koneksi MQTT via WebSocket (Menggunakan HiveMQ Public Broker WSS)
         const brokerUrl = 'wss://0bd0faf204644336bd0cafb544d2e1b0.s1.eu.hivemq.cloud:8884/mqtt';
         const client = mqtt.connect(brokerUrl, {
@@ -138,24 +122,54 @@
         const statusText = document.getElementById('connection-status-text');
         const tempEl = document.getElementById('temp-value');
         const humEl = document.getElementById('hum-value');
-        const rangeSlider = document.getElementById('range-slider');
-        const rangeValue = document.getElementById('range-value');
+        const statisticElements = {
+            temperature: {
+                average: document.getElementById('temp-average'),
+                maximum: document.getElementById('temp-maximum'),
+                minimum: document.getElementById('temp-minimum')
+            },
+            humidity: {
+                average: document.getElementById('hum-average'),
+                maximum: document.getElementById('hum-maximum'),
+                minimum: document.getElementById('hum-minimum')
+            }
+        };
         const sensorHistory = [];
         let latestTemperature = null;
         let latestHumidity = null;
 
-        function renderChart() {
-            const visibleRange = Number(rangeSlider.value);
-            const visibleHistory = sensorHistory.slice(-visibleRange);
-
-            rangeValue.innerText = visibleRange;
-            chart.data.labels = visibleHistory.map((sample) => sample.time);
-            chart.data.datasets[0].data = visibleHistory.map((sample) => sample.temperature);
-            chart.data.datasets[1].data = visibleHistory.map((sample) => sample.humidity);
-            chart.update();
+        function updateGauge(gauge, value, min, max) {
+            const clampedValue = Math.max(min, Math.min(max, value));
+            gauge.data.datasets[0].data = [clampedValue - min, max - clampedValue];
+            gauge.update();
         }
 
-        rangeSlider.addEventListener('input', renderChart);
+        function getStats(values) {
+            return {
+                average: values.reduce((sum, current) => sum + current, 0) / values.length,
+                maximum: Math.max(...values),
+                minimum: Math.min(...values)
+            };
+        }
+
+        function renderStatistics() {
+            const visibleHistory = sensorHistory.filter((sample) => sample.temperature !== null && sample.humidity !== null);
+            const temperatures = visibleHistory.map((sample) => sample.temperature);
+            const humidities = visibleHistory.map((sample) => sample.humidity);
+
+            if (temperatures.length === 0) {
+                return;
+            }
+
+            const temperatureStats = getStats(temperatures);
+            const humidityStats = getStats(humidities);
+            Object.entries(temperatureStats).forEach(([statistic, value]) => {
+                statisticElements.temperature[statistic].innerText = value.toFixed(1);
+            });
+            Object.entries(humidityStats).forEach(([statistic, value]) => {
+                statisticElements.humidity[statistic].innerText = value.toFixed(1);
+            });
+        }
 
         client.on('connect', () => {
             console.log('Terhubung ke MQTT Broker');
@@ -185,11 +199,13 @@
             if (topic === 'esp32/ruangan1/suhu') {
                 latestTemperature = value;
                 tempEl.innerText = value.toFixed(1);
+                updateGauge(temperatureGauge, value, -10, 50);
             } 
             
             if (topic === 'esp32/ruangan1/kelembaban') {
                 latestHumidity = value;
                 humEl.innerText = value.toFixed(1);
+                updateGauge(humidityGauge, value, 0, 100);
             }
 
             if (topic === 'esp32/ruangan1/suhu' || topic === 'esp32/ruangan1/kelembaban') {
@@ -197,7 +213,7 @@
                 if (sensorHistory.length > 60) {
                     sensorHistory.shift();
                 }
-                renderChart();
+                renderStatistics();
             }
         });
     </script>
