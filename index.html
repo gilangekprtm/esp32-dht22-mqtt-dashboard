@@ -70,7 +70,14 @@
 
     <!-- Grafik Section -->
     <section class="w-full max-w-4xl bg-slate-800/70 border border-slate-700/80 rounded-2xl p-6 shadow-xl">
-        <h2 class="text-lg font-bold mb-4 text-slate-200">Grafik Riwayat Sensor</h2>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+            <h2 class="text-lg font-bold text-slate-200">Grafik Riwayat Sensor</h2>
+            <label class="flex items-center gap-3 text-xs text-slate-400">
+                <span>Rentang: <strong id="range-value" class="text-slate-200">15</strong> titik</span>
+                <input id="range-slider" type="range" min="5" max="45" value="15" step="1"
+                    class="w-32 accent-cyan-400 cursor-pointer" aria-label="Rentang titik grafik">
+            </label>
+        </div>
         <div class="relative w-full h-72 sm:h-80">
             <canvas id="sensorChart"></canvas>
         </div>
@@ -131,6 +138,24 @@
         const statusText = document.getElementById('connection-status-text');
         const tempEl = document.getElementById('temp-value');
         const humEl = document.getElementById('hum-value');
+        const rangeSlider = document.getElementById('range-slider');
+        const rangeValue = document.getElementById('range-value');
+        const sensorHistory = [];
+        let latestTemperature = null;
+        let latestHumidity = null;
+
+        function renderChart() {
+            const visibleRange = Number(rangeSlider.value);
+            const visibleHistory = sensorHistory.slice(-visibleRange);
+
+            rangeValue.innerText = visibleRange;
+            chart.data.labels = visibleHistory.map((sample) => sample.time);
+            chart.data.datasets[0].data = visibleHistory.map((sample) => sample.temperature);
+            chart.data.datasets[1].data = visibleHistory.map((sample) => sample.humidity);
+            chart.update();
+        }
+
+        rangeSlider.addEventListener('input', renderChart);
 
         client.on('connect', () => {
             console.log('Terhubung ke MQTT Broker');
@@ -151,29 +176,28 @@
         client.on('message', (topic, payload) => {
             const message = payload.toString();
             const timeNow = new Date().toLocaleTimeString();
+            const value = parseFloat(message);
+
+            if (Number.isNaN(value)) {
+                return;
+            }
 
             if (topic === 'esp32/ruangan1/suhu') {
-                tempEl.innerText = parseFloat(message).toFixed(1);
-                
-                // Masukkan data ke Grafik Suhu
-                if (chart.data.labels.length > 15) {
-                    chart.data.labels.shift();
-                    chart.data.datasets[0].data.shift();
-                }
-                chart.data.labels.push(timeNow);
-                chart.data.datasets[0].data.push(parseFloat(message));
-                chart.update();
+                latestTemperature = value;
+                tempEl.innerText = value.toFixed(1);
             } 
             
             if (topic === 'esp32/ruangan1/kelembaban') {
-                humEl.innerText = parseFloat(message).toFixed(1);
-                
-                // Masukkan data ke Grafik Kelembapan
-                if (chart.data.datasets[1].data.length > 15) {
-                    chart.data.datasets[1].data.shift();
+                latestHumidity = value;
+                humEl.innerText = value.toFixed(1);
+            }
+
+            if (topic === 'esp32/ruangan1/suhu' || topic === 'esp32/ruangan1/kelembaban') {
+                sensorHistory.push({ time: timeNow, temperature: latestTemperature, humidity: latestHumidity });
+                if (sensorHistory.length > 60) {
+                    sensorHistory.shift();
                 }
-                chart.data.datasets[1].data.push(parseFloat(message));
-                chart.update();
+                renderChart();
             }
         });
     </script>
